@@ -4,15 +4,12 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { AppContainer } from 'react-hot-loader';
 
 import App from './App';
-
 import './Polyfills';
 
 const rootEl = document.getElementById('root');
 ReactDOM.render(
     <AppContainer>
-      <MuiThemeProvider>
-        <App />
-      </MuiThemeProvider>
+      <App />
     </AppContainer>,
     rootEl
 );
@@ -24,9 +21,7 @@ if(module.hot) {
         const NextApp = require('./App').default;
         ReactDOM.render(
             <AppContainer>
-              <MuiThemeProvider>
-                <NextApp />
-              </MuiThemeProvider>
+              <NextApp />
             </AppContainer>,
             rootEl
         );
