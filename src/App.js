@@ -1,27 +1,41 @@
 import React, { Component } from "react";
-import FlatButton from "material-ui/FlatButton";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
+import { grey100, grey700 } from "material-ui/styles/colors";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 
 import Header from "./components/Header";
-import TodoItem from "./components/TodoItem";
-import { addTodo, removeTodo, getTodos, addDbChangeListener } from "./db";
+import Todos from "./containers/Todos";
+import { getTodos, addDbChangeListener } from "./db";
 
 const styles = {
     container: {
-        color: "#555",
+        backgroundColor: grey100,
+        minHeight: "100vh",
         fontFamily: "Roboto, sans-serif"
     },
     layout: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
         padding: 16
     }
 };
 
 const muiTheme = getMuiTheme({
-    palette: {}
+    fontFamily: "Roboto, sans-serif",
+    palette: {
+        // primary1Color: cyan500,
+        // primary2Color: cyan700,
+        // primary3Color: grey400,
+        // accent1Color: pinkA200,
+        // accent2Color: grey100,
+        // accent3Color: grey500,
+        textColor: grey700
+    // alternateTextColor: white,
+    // canvasColor: white,
+    // borderColor: grey300,
+    // disabledColor: fade(darkBlack, 0.3),
+    // pickerHeaderColor: cyan500,
+    // clockCircleColor: fade(darkBlack, 0.07),
+    // shadowColor: fullBlack
+    }
 });
 
 class App extends Component {
@@ -31,9 +45,10 @@ class App extends Component {
         this.state = {
             todos: {
                 rows: []
-            }
+            },
+            filter: null,
+            activeTodo: null
         };
-        this.handleRemove = this.handleRemove.bind(this);
         this.setTodosInState = this.setTodosInState.bind(this);
     }
 
@@ -43,20 +58,11 @@ class App extends Component {
     }
 
     setTodosInState() {
-        getTodos().then(todos => {
-            console.log(todos);
+        getTodos(this.state.filter).then(todos => {
             this.setState({
                 todos: todos
             });
         });
-    }
-
-    handleClick() {
-        addTodo("A random todo");
-    }
-
-    handleRemove(todo) {
-        removeTodo(todo.doc);
     }
 
     render() {
@@ -66,10 +72,7 @@ class App extends Component {
               <div style={ styles.container }>
                 <Header />
                 <div id="layout" style={ styles.layout }>
-                  <FlatButton label="Hello there" primary={ true } onClick={ this.handleClick.bind(this) } />
-                  { rows.map(todo => {
-                        return <TodoItem onClick={ this.handleRemove } key={ todo.id } todo={ todo } />;
-                    }) }
+                  <Todos rows={ rows } />
                 </div>
               </div>
             </MuiThemeProvider>
