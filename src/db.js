@@ -1,12 +1,23 @@
 import PouchDB from "pouchdb";
-import Promise from "bluebird";
 import uuid from "uuid";
 import moment from "moment";
 
-const db = new PouchDB("todos");
+let dir = "todos";
+if(process.env.NODE_ENV === "development") {
+    PouchDB.debug.enable("*");
+} else if(process.env.NODE_ENV === "test") {
+    dir = "dbTemp"
+}
 
-Promise.promisifyAll(db);
+const db = new PouchDB(dir);
 
+// const getQueueOrder = function() {
+//     return db.query({
+//         selector: {
+//             name: "Mario"
+//         },
+//     })
+// };
 
 export function addTodo(title, content) {
     const createdDate = moment().toISOString();
@@ -19,22 +30,22 @@ export function addTodo(title, content) {
         createdAt: createdDate,
         updatedAt: createdDate
     };
-    return db.putAsync(todo);
+    return db.put(todo);
 }
 
 export function updateTodo(todo) {
     todo.updatedAt = moment().toISOString();
-    return db.putAsync(todo);
+    return db.put(todo);
 }
 
 
 export function removeTodo(doc) {
-    return db.removeAsync(doc);
+    return db.remove(doc);
 }
 
 
 export function getTodos(options) {
-    return db.allDocsAsync(Object.assign({}, {
+    return db.allDocs(Object.assign({}, {
         include_docs: true,
         descending: true
     }, options));
@@ -46,3 +57,5 @@ export function addDbChangeListener(cb) {
         live: true
     }).on("change", cb);
 }
+
+export default db;
