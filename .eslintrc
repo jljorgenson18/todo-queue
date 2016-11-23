@@ -1,29 +1,32 @@
 {
-  "env": {
-    "browser": 1,
-    "node": 1,
-    "es6": 1
-  },
-  "rules": {
-    "quotes": 0,
-    "semi": 2,
-    "no-var": 2,
-    "no-unused-vars": [1, {"vars": "all", "args": "none"}],
-    "no-underscore-dangle": 0,
-    "no-empty": 0,
-    "space-return-throw-case": 0,
-    "strict": [2, "global"],
-    react/no-find-dom-node: 0
-  },
-  "parserOptions": {
-    "ecmaVersion": 6,
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true
-    }
-  },
-  "extends": "plugin:react/recommended",
-  "plugins": [
-    "react"
-  ]
+    "env": {
+        "browser": 1,
+        "node": 1,
+        "es6": 1
+    },
+    "rules": {
+        "quotes": 0,
+        "semi": 2,
+        "no-var": 2,
+        "no-unused-vars": [1, {
+            "vars": "all",
+            "args": "none"
+        }],
+        "no-underscore-dangle": 0,
+        "no-empty": 0,
+        "space-return-throw-case": 0,
+        "strict": 0,
+        "react/no-find-dom-node": 0
+    },
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+    "extends": "plugin:react/recommended",
+    "plugins": [
+        "react"
+    ]
 }
