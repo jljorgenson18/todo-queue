@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import debounce from "lodash/debounce";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import { grey100, grey700 } from "material-ui/styles/colors";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
@@ -58,9 +59,16 @@ class App extends Component {
     }
 
     setTodosInState() {
+        // Clear the timeout in case this was called explicitly
+        clearTimeout(this.state.resyncIntervalId);
         getTodos(this.state.filter).then(todos => {
             this.setState({
-                todos: todos
+                todos
+            });
+            // Resync the database every minute
+            const resyncIntervalId = setTimeout(this.setTodosInState, 60 * 1000);
+            this.setState({
+                resyncIntervalId
             });
         });
     }
