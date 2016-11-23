@@ -1,20 +1,19 @@
 import React, { Component, PropTypes } from "react";
-import Paper from "material-ui/Paper";
 import IconButton from "material-ui/IconButton";
+import moment from "moment";
 import Popover from "material-ui/Popover";
 import ActionDelete from "material-ui/svg-icons/action/delete";
 import RaisedButton from "material-ui/RaisedButton";
+import { Card, CardActions, CardText, CardHeader } from "material-ui/Card";
 import { grey700 } from "material-ui/styles/colors";
+import { Editor, EditorState } from "draft-js";
 
 const styles = {
-    container: {
-        padding: "8px 16px",
+    card: {
         margin: "4px 0",
         backgroundColor: "white",
         width: "100%",
         maxWidth: 500,
-        display: "flex",
-        alignItems: "center"
     },
     title: {
         margin: 0,
@@ -26,12 +25,14 @@ const styles = {
         padding: 4
     },
     confirm: {
+        width: 250,
         padding: 16,
         display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-end"
+        flexWrap: "wrap",
+        justifyContent: "space-between"
     },
     confirmLabel: {
+        width: "100%",
         margin: 0,
         marginBottom: 16
     }
@@ -43,11 +44,16 @@ class TodoItem extends Component {
         super(props);
         this.handleRemove = this.handleRemove.bind(this);
         this.handleDeleteClick = this.handleDeleteClick.bind(this);
-        this.handleRequestClose = this.handleRequestClose.bind(this);
-
+        this.handleRequestClose = () => this.setState({
+            open: false
+        });
+        this.handleContentChange = (editorState) => this.setState({
+            editorState
+        });
         this.state = {
             open: false,
-            anchorEl: null
+            anchorEl: null,
+            editorState: EditorState.createEmpty()
         };
     }
 
@@ -64,32 +70,38 @@ class TodoItem extends Component {
         });
     }
 
-    handleRequestClose() {
-        this.setState({
-            open: false,
-        });
-    }
-
     render() {
         const {todo, onTodoSelect} = this.props;
         return (
-            <Paper zDepth={ 1 } style={ styles.container } onClick={ () => onTodoSelect(todo) }>
-              <h3 style={ styles.title }>{ todo.doc.title }</h3>
-              <IconButton tooltip="Delete Todo" style={ styles.iconButtons } onClick={ this.handleDeleteClick }>
-                <ActionDelete />
-              </IconButton>
+            <Card onClick={ () => onTodoSelect(todo) } style={ styles.card }>
+              <CardHeader title={ todo.doc.title }
+                subtitle={ `Added ${moment(todo.doc.createdAt).fromNow()}` }
+                actAsExpander={ true }
+                showExpandableButton={ true } />
+              <CardText expandable={ true }>
+                <Editor editorState={ this.state.editorState } onChange={ this.handleContentChange } />
+              </CardText>
+              <CardActions expandable={ true }>
+                <IconButton tooltip="Delete Todo"
+                  tooltipPosition="top-center"
+                  style={ styles.iconButtons }
+                  onClick={ this.handleDeleteClick }>
+                  <ActionDelete />
+                </IconButton>
+              </CardActions>
               <Popover open={ this.state.open }
                 anchorEl={ this.state.anchorEl }
                 zDepth={ 3 }
-                targetOrigin={ { vertical: "bottom", horizontal: "right" } }
-                anchorOrigin={ { vertical: "top", horizontal: "right" } }
+                targetOrigin={ { vertical: "top", horizontal: "left" } }
+                anchorOrigin={ { vertical: "bottom", horizontal: "left" } }
                 onRequestClose={ this.handleRequestClose }>
                 <div style={ styles.confirm }>
                   <h5 style={ styles.confirmLabel }>Are you sure you want to delete this todo?</h5>
                   <RaisedButton label="Yes!" secondary={ true } onClick={ this.handleRemove } />
+                  <RaisedButton label="Nah I'm Good" onClick={ this.handleRequestClose } />
                 </div>
               </Popover>
-            </Paper>
+            </Card>
             );
     }
 }
