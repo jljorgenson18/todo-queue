@@ -21,11 +21,11 @@ export function removeTodo(doc) {
 }
 
 
-export function getTodos() {
-    return db.allDocsAsync({
+export function getTodos(options) {
+    return db.allDocsAsync(Object.assign({}, {
         include_docs: true,
         descending: true
-    });
+    }, options));
 }
 
 export function addDbChangeListener(cb) {
