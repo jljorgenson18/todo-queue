@@ -58,6 +58,7 @@
     "react-addons-test-utils": "^15.4.0",
     "react-hot-loader": "3.0.0-beta.6",
     "run-sequence": "^1.2.2",
+    "stats-webpack-plugin": "^0.4.2",
     "webpack": "2.1.0-beta.20",
     "webpack-dev-middleware": "^1.8.4",
     "webpack-hot-middleware": "^2.13.2",
