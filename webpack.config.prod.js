@@ -10,9 +10,9 @@ module.exports = {
         "./src/index",
     ],
     output: {
-        path: path.join(__dirname, "dist"),
-        filename: "bundle.js",
-        publicPath: "/static/"
+        path: path.join(__dirname, 'public/js'),
+        filename: 'bundle.js',
+        publicPath: '/public/js/'
     },
     module: {
         loaders: [{
@@ -31,11 +31,6 @@ module.exports = {
                 warnings: false,
                 screw_ie8: true
             }
-        }),
-        // creates a stats.json
-        new StatsPlugin('webpack.stats.json', {
-            source: false,
-            modules: false
         }),
         new webpack.DefinePlugin({
             "process.env.NODE_ENV": JSON.stringify("production")

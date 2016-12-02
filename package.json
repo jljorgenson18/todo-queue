@@ -6,8 +6,8 @@
     "lint": "./node_modules/.bin/gulp lint",
     "test": "./node_modules/.bin/gulp test",
     "test:coverage": "./node_modules/.bin/gulp test:coverage",
-    "build:dev": "./node_modules/.bin/gulp build:dev",
-    "build:prod": "./node_modules/.bin/gulp build:prod",
+    "build": "./node_modules/.bin/gulp build",
+    "deploy": "./node_modules/.bin/gulp deploy",
     "start": "./node_modules/.bin/gulp"
   },
   "esformatter": {
@@ -46,6 +46,7 @@
     "eslint-friendly-formatter": "^2.0.6",
     "eslint-plugin-react": "^6.7.1",
     "gulp": "^3.9.1",
+    "gulp-awspublish": "^3.3.0",
     "gulp-eslint": "^3.0.1",
     "gulp-istanbul": "^1.1.1",
     "gulp-mocha": "^3.0.1",

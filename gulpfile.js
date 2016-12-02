@@ -1,93 +1,109 @@
-'use strict';
+"use strict";
 
 // Transform all required files with Babel
-require('babel-register');
+require("babel-register");
 // Turning off warnings because #yolo
-require('bluebird').config({
+require("bluebird").config({
     warnings: false
 });
 
-const gulp = require('gulp');
-const gutil = require('gulp-util');
-const eslint = require('gulp-eslint');
-const eslintFormatter = require('eslint-friendly-formatter');
-const esformatter = require('esformatter');
-const runSequence = require('run-sequence');
-const fs = require('fs');
-const webpack = require('webpack');
-const webpackDevMiddleware = require('webpack-dev-middleware');
-const webpackHotMiddleware = require('webpack-hot-middleware');
+const gulp = require("gulp");
+const gutil = require("gulp-util");
+const eslint = require("gulp-eslint");
+const eslintFormatter = require("eslint-friendly-formatter");
+const esformatter = require("esformatter");
+const runSequence = require("run-sequence");
+const fs = require("fs");
+const webpack = require("webpack");
+const webpackDevMiddleware = require("webpack-dev-middleware");
+const webpackHotMiddleware = require("webpack-hot-middleware");
+const awspublish = require("gulp-awspublish");
 
-const esformatterOptions = require('./esformatterOptions');
-const webpackConfigDev = require('./webpack.config.dev.js');
-const webpackConfigProd = require('./webpack.config.prod.js');
+const esformatterOptions = require("./esformatterOptions");
+const webpackConfigDev = require("./webpack.config.dev.js");
+const webpackConfigProd = require("./webpack.config.prod.js");
 
-const browserSync = require('browser-sync').create();
+const browserSync = require("browser-sync").create();
 
 const allJs = [
-    'src/**/*.js',
-    '*.js',
-    'testing/**/*.js'
+    "src/**/*.js",
+    "*.js",
+    "testing/**/*.js"
 ];
 
 // Split up tasks
-require('./testTasks')(gulp);
+require("./testTasks")(gulp);
 
-gulp.task('lint', function() {
+gulp.task("lint", function() {
     return gulp.src(allJs)
-        .pipe(eslint('./.eslintrc'))
+        .pipe(eslint("./.eslintrc"))
         .pipe(eslint.format(eslintFormatter))
         .pipe(eslint.result(result => {
             const warningCount = result.warningCount;
             const errorCount = result.errorCount;
             if((warningCount + errorCount) === 0) {
-                gutil.log('Eslint found', gutil.colors.green('no issues'));
+                gutil.log("Eslint found", gutil.colors.green("no issues"));
             } else {
-                let warningStr = (warningCount === 1) ? ' warning,' : ' warnings,';
-                let errorStr = (errorCount === 1) ? ' error,' : ' errors';
-                gutil.log('Eslint found', gutil.colors.yellow(result.warningCount + warningStr), gutil.colors.red(result.errorCount + errorStr));
+                let warningStr = (warningCount === 1) ? " warning," : " warnings,";
+                let errorStr = (errorCount === 1) ? " error," : " errors";
+                gutil.log("Eslint found", gutil.colors.yellow(result.warningCount + warningStr), gutil.colors.red(result.errorCount + errorStr));
             }
         }));
 });
 
-gulp.task('webpack:dev', function(done) {
+gulp.task("webpack:dev", function(done) {
     // run webpack
     webpack(webpackConfigDev, function(err, stats) {
         if(err) {
-            throw new gutil.PluginError('webpack', err);
+            throw new gutil.PluginError("webpack", err);
         }
-        gutil.log('[webpack]', stats.toString({
+        gutil.log("[webpack]", stats.toString({
             colors: true
         }));
         done();
     });
 });
 
-gulp.task('webpack:prod', function(done) {
+gulp.task("webpack:prod", function(done) {
     // run webpack
     webpack(webpackConfigProd, function(err, stats) {
         if(err) {
-            throw new gutil.PluginError('webpack', err);
+            throw new gutil.PluginError("webpack", err);
         }
-        gutil.log('[webpack]', stats.toString({
+        gutil.log("[webpack]", stats.toString({
             colors: true
         }));
         done();
     });
 });
 
-gulp.task('build:dev', done => {
-    runSequence('test:coverage', 'webpack:dev', done);
+gulp.task("copyToDist", () => {
+    return gulp.src(["public/**/*", "index.html"], {
+        base: "./"
+    }).pipe(gulp.dest("dist"));
 });
 
-gulp.task('build:prod', done => {
-    runSequence('test:coverage', 'webpack:prod', done);
+gulp.task("build", done => {
+    runSequence("test:coverage", "webpack:prod", "copyToDist", done);
 });
 
+gulp.task("publish", () => {
+    // create a new publisher using S3 options
+    // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property
+    const publisher = awspublish.create(require("./awsConfig"));
+    return gulp.src("./dist/**")
+        .pipe(publisher.publish())
+        .pipe(publisher.sync())
+        .pipe(awspublish.reporter());
+});
 
-gulp.task('default', () => {
+gulp.task("deploy", done => {
+    runSequence("build", "publish", done);
+});
+
+gulp.task("default", () => {
     // lints and beautifies src files
-    gulp.watch(allJs).on('change', file => {
+    gulp.watch(allJs).on("change", file => {
         try {
             let ogFile = fs.readFileSync(file.path).toString();
             let newFile = esformatter.format(ogFile, esformatter.rc(file.path, esformatterOptions));
@@ -99,17 +115,17 @@ gulp.task('default', () => {
         }
         gulp
             .src(file.path)
-            .pipe(eslint('./.eslintrc'))
+            .pipe(eslint("./.eslintrc"))
             .pipe(eslint.format(eslintFormatter))
             .pipe(eslint.result(result => {
                 const warningCount = result.warningCount;
                 const errorCount = result.errorCount;
                 if((warningCount + errorCount) === 0) {
-                    gutil.log('Eslint found', gutil.colors.green('no issues'));
+                    gutil.log("Eslint found", gutil.colors.green("no issues"));
                 } else {
-                    let warningStr = (warningCount === 1) ? ' warning,' : ' warnings,';
-                    let errorStr = (errorCount === 1) ? ' error,' : ' errors';
-                    gutil.log('Eslint found', gutil.colors.yellow(result.warningCount + warningStr), gutil.colors.red(result.errorCount + errorStr));
+                    let warningStr = (warningCount === 1) ? " warning," : " warnings,";
+                    let errorStr = (errorCount === 1) ? " error," : " errors";
+                    gutil.log("Eslint found", gutil.colors.yellow(result.warningCount + warningStr), gutil.colors.red(result.errorCount + errorStr));
                 }
             }));
     });
@@ -118,7 +134,7 @@ gulp.task('default', () => {
     const bundler = webpack(webpackConfigDev);
     browserSync.init({
         server: {
-            baseDir: './',
+            baseDir: "./",
             middleware: [
                 webpackDevMiddleware(bundler, {
                     publicPath: webpackConfigDev.output.publicPath,
@@ -135,7 +151,7 @@ gulp.task('default', () => {
         // no need to watch '*.js' here, webpack will take care of it for us,
         // including full page reloads if HMR won't work
         files: [
-            'index.html'
+            "index.html"
         ],
         open: false
     });

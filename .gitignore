@@ -13,3 +13,6 @@ quality
 npm-debug.log
 
 dbTemp
+
+awsConfig.json
+public/js/bundle.js
