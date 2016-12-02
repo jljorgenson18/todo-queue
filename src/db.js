@@ -19,12 +19,12 @@ const db = new PouchDB(dir);
 //     })
 // };
 
-export function addTodo(title, content) {
+export function addTodo(title, description) {
     const createdDate = moment().toISOString();
     const todo = {
         _id: uuid(),
         title,
-        content,
+        description,
         comments: [],
         completed: false,
         createdAt: createdDate,

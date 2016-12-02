@@ -25,7 +25,7 @@ class Todos extends Component {
     }
 
     handleClick() {
-        addTodo("A random todo");
+        addTodo("A random todo", "# This is a description\n\nAnd this is a paragraph");
     }
 
     render() {

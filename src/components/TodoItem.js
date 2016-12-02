@@ -4,9 +4,9 @@ import moment from "moment";
 import Popover from "material-ui/Popover";
 import ActionDelete from "material-ui/svg-icons/action/delete";
 import RaisedButton from "material-ui/RaisedButton";
+import ReactMarkdown from "react-markdown";
 import { Card, CardActions, CardText, CardHeader } from "material-ui/Card";
 import { grey700 } from "material-ui/styles/colors";
-import { Editor, EditorState } from "draft-js";
 
 const styles = {
     card: {
@@ -35,6 +35,8 @@ const styles = {
         width: "100%",
         margin: 0,
         marginBottom: 16
+    },
+    description: {
     }
 };
 
@@ -44,16 +46,13 @@ class TodoItem extends Component {
         super(props);
         this.handleRemove = this.handleRemove.bind(this);
         this.handleDeleteClick = this.handleDeleteClick.bind(this);
+        this.getDescriptionElement = this.getDescriptionElement.bind(this);
         this.handleRequestClose = () => this.setState({
             open: false
         });
-        this.handleContentChange = (editorState) => this.setState({
-            editorState
-        });
         this.state = {
             open: false,
-            anchorEl: null,
-            editorState: EditorState.createEmpty()
+            anchorEl: null
         };
     }
 
@@ -70,6 +69,18 @@ class TodoItem extends Component {
         });
     }
 
+    getDescriptionElement() {
+        if(this.state.editing) {
+            return (
+                <textarea name="description" value=""></textarea>
+                );
+        } else {
+            return (
+                <ReactMarkdown source={ this.props.todo.doc.description } />
+                );
+        }
+    }
+
     render() {
         const {todo, onTodoSelect} = this.props;
         return (
@@ -79,7 +90,7 @@ class TodoItem extends Component {
                 actAsExpander={ true }
                 showExpandableButton={ true } />
               <CardText expandable={ true }>
-                <Editor editorState={ this.state.editorState } onChange={ this.handleContentChange } />
+                { this.getDescriptionElement() }
               </CardText>
               <CardActions expandable={ true }>
                 <IconButton tooltip="Delete Todo"
@@ -96,7 +107,7 @@ class TodoItem extends Component {
                 anchorOrigin={ { vertical: "bottom", horizontal: "left" } }
                 onRequestClose={ this.handleRequestClose }>
                 <div style={ styles.confirm }>
-                  <h5 style={ styles.confirmLabel }>Are you sure you want to delete this todo?</h5>
+                  <h5 style={ styles.confirmLabel }>{ "Are you sure you want to delete this todo?" }</h5>
                   <RaisedButton label="Yes!" secondary={ true } onClick={ this.handleRemove } />
                   <RaisedButton label="Nah I'm Good" onClick={ this.handleRequestClose } />
                 </div>
