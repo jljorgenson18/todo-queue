@@ -78,7 +78,7 @@ gulp.task("webpack:prod", function(done) {
 });
 
 gulp.task("copyToDist", () => {
-    return gulp.src(["public/**/*", "index.html"], {
+    return gulp.src(["public/**/*", "index.html", "robots.txt"], {
         base: "./"
     }).pipe(gulp.dest("dist"));
 });
